@@ -59,6 +59,12 @@ dependencies {
 
 repositories {
     //mavenLocal()
+
+    // temporary for custom bStats fork
+    maven {
+        url 'https://jitpack.io'
+    }
+
     maven {
         url = 'https://oss.sonatype.org/content/repositories/snapshots'
     }
@@ -100,6 +106,7 @@ shadowJar {
     configurations = [project.configurations.shadow]
     // TODO this is temporary until Floodgate's dev branch is merged
     relocate("com.google.inject", "org.geysermc.floodgate.shadow.guice")
+    relocate("org.bstats", "org.geysermc.floodgate.shadow.bstats")
     relocate("org.yaml.snakeyaml", "org.geysermc.floodgate.shadow.snakeyaml") //relocate snakeyaml to avoid conflicts with other mods
     exclude([
             'cloud/**',
