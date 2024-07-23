@@ -18,10 +18,17 @@ jobs:
         with:
           arguments: modrinth
           gradle-home-cache-cleanup: true
-      - name: Archive Artifacts
+      - name: Archive Artifacts (fabric)
         uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
         if: success()
         with:
           name: Floodgate Fabric
-          path: build/libs/floodgate-fabric.jar
+          path: fabric/build/libs/floodgate-fabric.jar
+          if-no-files-found: error
+      - name: Archive Artifacts (neoforge)
+        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
+        if: success()
+        with:
+          name: Floodgate NeoForge
+          path: neoforge/build/libs/floodgate-neoforge.jar
           if-no-files-found: error
