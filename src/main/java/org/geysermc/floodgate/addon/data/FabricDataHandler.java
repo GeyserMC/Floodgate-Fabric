@@ -1,8 +1,10 @@
 package org.geysermc.floodgate.addon.data;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.logging.LogUtils;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
 import net.minecraft.DefaultUncaughtExceptionHandler;
 import net.minecraft.network.Connection;
@@ -12,12 +14,10 @@ import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import org.geysermc.floodgate.MinecraftServerHolder;
 import org.geysermc.floodgate.api.logger.FloodgateLogger;
-import org.geysermc.floodgate.mixin.ConnectionMixin;
-import org.geysermc.floodgate.mixin.ClientIntentionPacketMixinInterface;
-import com.mojang.authlib.GameProfile;
-import io.netty.channel.ChannelHandlerContext;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 import org.geysermc.floodgate.config.FloodgateConfig;
+import org.geysermc.floodgate.mixin.ClientIntentionPacketMixinInterface;
+import org.geysermc.floodgate.mixin.ConnectionMixin;
 import org.geysermc.floodgate.player.FloodgateHandshakeHandler;
 import org.geysermc.floodgate.player.FloodgateHandshakeHandler.HandshakeResult;
 import org.slf4j.Logger;
@@ -86,6 +86,11 @@ public final class FabricDataHandler extends CommonDataHandler {
 
     private boolean checkAndHandleLogin(Object packet) {
         if (packet instanceof ServerboundHelloPacket) {
+            // Can occur if channelRead() is called even after we determine it is not a floodgate player
+            if (player == null) {
+                return false;
+            }
+
             String kickMessage = getKickMessage();
             if (kickMessage != null) {
                 networkManager.disconnect(Component.nullToEmpty(kickMessage));
